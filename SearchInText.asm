@@ -3,6 +3,7 @@
 prompt: .asciiz "Please enter a string (50 characters max): "
 fail: .asciiz " Fail!\n"
 success: .asciiz " Success! Location: "
+newline: .asciiz "\n"
 buffer: .space 50
 
 .text
@@ -25,6 +26,7 @@ ReadChar:
 
 li $v0, 12		# get a char
 syscall
+beq $v0, '?', EXIT		# if get '?', exit
 
 
 subi $t0, $zero, 1	# one position before the starting index of the stored string
@@ -47,7 +49,12 @@ addi, $t0, $t0, 1	# get base-1 index
 move $a0, $t0
 li $v0, 1		# print index
 syscall
-j EXIT			# terminate
+
+la $a0, newline		# print a new line
+li $v0, 4
+syscall
+
+j ReadChar		# terminate
 
 FAIL:
 la $a0, fail		# print fail message
